@@ -1,179 +1,102 @@
-# 🚀 Dockerized Nginx Load Balancer with Prometheus Monitoring
+# 🚀 Nginx Load Balancer with Docker & Prometheus Monitoring
 
-A production-inspired project demonstrating how to build a scalable backend architecture using Docker, Docker Compose, Nginx Reverse Proxy, and Prometheus Monitoring.
-
-This project contains three Node.js backend servers running inside Docker containers behind an Nginx Load Balancer. Prometheus continuously monitors every backend by scraping application metrics.
-
----
-
-# 📌 Project Goal
-
-The goal of this project is to understand how real-world backend systems are designed.
-
-Instead of exposing a single backend server directly to users, requests first go through an Nginx Reverse Proxy which distributes traffic among multiple backend servers.
-
-Additionally, Prometheus continuously monitors the health and performance of every backend service.
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-384D54?style=for-the-badge&logo=docker&logoColor=white)
+![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ---
 
-# 🏗 Project Architecture
+# 📌 Overview
+
+This project demonstrates how to deploy multiple Node.js applications behind an **Nginx Reverse Proxy** using **Docker Compose** and monitor them using **Prometheus**.
+
+Instead of exposing every application individually, Nginx acts as a single entry point and distributes incoming requests across multiple backend containers using the **Round Robin Load Balancing** algorithm.
+
+Prometheus continuously collects metrics from each application and provides real-time monitoring.
+
+---
+
+# 🎯 Problem Statement
+
+Imagine your application receives thousands of requests every second.
+
+Running only one application container creates problems:
+
+- Single point of failure
+- High CPU usage
+- Poor scalability
+- Downtime during maintenance
+
+This project solves these problems by introducing:
+
+- Reverse Proxy
+- Load Balancing
+- Multiple Containers
+- Monitoring
+
+---
+
+# 🏗 Architecture
 
 ```
-                 Client
-                    │
-                    ▼
-         ┌────────────────────┐
-         │  NGINX Reverse Proxy│
-         │    Load Balancer    │
-         └────────────────────┘
-          │        │        │
-          ▼        ▼        ▼
-      App-1     App-2     App-3
-          │        │        │
-          └────────┼────────┘
-                   │
-                   ▼
-             Prometheus
-          (Metrics Collector)
-
+                    Client
+                       │
+                       ▼
+                 Nginx Reverse Proxy
+             ┌────────┼────────┐
+             ▼        ▼        ▼
+          App-1     App-2     App-3
+             ▲        ▲        ▲
+             └────────┼────────┘
+                      │
+                Prometheus
 ```
 
 ---
 
-# 📷 Architecture Diagram
+# ✨ Features
 
-> Add this image inside the `images/` folder.
-
-```
-images/architecture.png
-```
-
----
-
-# 📚 What is Reverse Proxy?
-
-A Reverse Proxy is a server that sits between clients and backend servers.
-
-Instead of clients communicating directly with backend servers, every request first reaches Nginx.
-
-Nginx then forwards that request to one of the available backend servers.
-
-### Benefits
-
-- Hide backend servers
-- Increase security
-- Load balancing
-- Better scalability
-- SSL termination
-- Caching support
+- Dockerized Node.js applications
+- Nginx Reverse Proxy
+- Round Robin Load Balancing
+- Docker Compose
+- Environment Variables
+- Prometheus Monitoring
+- Custom Metrics
+- Health Monitoring
+- Production Folder Structure
+- Easy Deployment
 
 ---
 
-# 📚 What is Load Balancing?
+# 🛠 Tech Stack
 
-Load Balancing means distributing incoming requests across multiple backend servers.
-
-Instead of sending every request to a single server:
-
-```
-Client
-   │
-   ▼
-App-1 ❌ overloaded
-```
-
-Requests become:
-
-```
-Client
-   │
-   ▼
-Nginx
-
- ├──► App-1
- ├──► App-2
- └──► App-3
-```
-
-This improves
-
-- Performance
-- Availability
-- Fault tolerance
-- Scalability
-
----
-
-# 📚 What is Prometheus?
-
-Prometheus is an open-source monitoring tool.
-
-Instead of applications sending metrics to Prometheus,
-
-Prometheus **pulls** metrics from applications.
-
-This is called the **Pull Model**.
-
-Every few seconds Prometheus sends an HTTP request:
-
-```
-GET /metrics
-```
-
-The application responds with all current metrics.
-
----
-
-# 📚 What are Metrics?
-
-Metrics are numerical values that describe the current state of an application.
-
-Examples:
-
-- CPU Usage
-- Memory Usage
-- Number of HTTP Requests
-- Application Uptime
-- Response Time
-- Error Count
-
-Example:
-
-```
-http_requests_total 52
-```
-
-Means:
-
-Application has served 52 requests.
-
----
-
-# 📚 Why Monitoring?
-
-Without monitoring,
-
-we never know
-
-- whether a container is alive
-- how many requests it served
-- memory usage
-- CPU usage
-- application crashes
-
-Monitoring provides complete visibility into running services.
+| Technology | Purpose |
+|------------|----------|
+| Node.js | Backend |
+| Express | API |
+| Docker | Containerization |
+| Docker Compose | Multi-container Management |
+| Nginx | Reverse Proxy & Load Balancer |
+| Prometheus | Monitoring |
+| Linux | Development Environment |
 
 ---
 
 # 📂 Project Structure
 
 ```
-nginx-load-balancer/
+nginx-load-balancer-monitoring/
+
 │
 ├── app/
-│   ├── server.js
 │   ├── Dockerfile
 │   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
 │
 ├── nginx/
 │   └── nginx.conf
@@ -181,62 +104,125 @@ nginx-load-balancer/
 ├── prometheus/
 │   └── prometheus.yml
 │
+├── screenshots/
+│   ├── architecture.png
+│   ├── browser.png
+│   ├── prometheus-home.png
+│   ├── prometheus-targets.png
+│   └── metrics.png
+│
 ├── docker-compose.yml
 │
-├── images/
+├── .gitignore
 │
 └── README.md
 ```
 
 ---
 
-# ⚙ Tech Stack
+# ⚙️ How It Works
 
-- Node.js
-- Express.js
-- Docker
-- Docker Compose
-- Nginx
-- Prometheus
-- Prom Client
+### Step 1
+
+The user opens
+
+```
+http://localhost:8080
+```
+
+↓
+
+### Step 2
+
+The request reaches Nginx.
+
+↓
+
+### Step 3
+
+Nginx forwards the request to one backend container.
+
+↓
+
+```
+App-1
+```
+
+↓
+
+Next request
+
+```
+App-2
+```
+
+↓
+
+Next request
+
+```
+App-3
+```
+
+↓
+
+Again
+
+```
+App-1
+```
+
+This is called **Round Robin Load Balancing**.
 
 ---
 
-# ⚙ Features
+# 📊 Monitoring Workflow
 
-✅ Dockerized Backend
+Prometheus continuously sends requests to
 
-✅ Nginx Reverse Proxy
+```
+GET /metrics
+```
 
-✅ Round Robin Load Balancing
+for every application.
 
-✅ Multiple Backend Containers
+```
+Prometheus
 
-✅ Prometheus Monitoring
+↓
 
-✅ HTTP Request Counter
+GET /metrics
 
-✅ Health Monitoring
+↓
 
-✅ Metrics Endpoint
+App-1
+
+↓
+
+Metrics
+
+↓
+
+Database
+```
+
+The same process is repeated for App-2 and App-3 every 15 seconds.
 
 ---
 
-# 🚀 Running the Project
+# 🚀 Getting Started
 
-Clone repository
-
-```bash
-git clone <repository-url>
-```
-
-Move into project
+## Clone Repository
 
 ```bash
-cd nginx-load-balancer
+git clone https://github.com/YOUR_USERNAME/nginx-load-balancer-monitoring.git
+
+cd nginx-load-balancer-monitoring
 ```
 
-Run containers
+---
+
+## Build Containers
 
 ```bash
 docker compose up --build
@@ -244,29 +230,25 @@ docker compose up --build
 
 ---
 
-# 🌐 Application
+## Verify Running Containers
 
-Open
+```bash
+docker ps
+```
+
+---
+
+## Open Application
 
 ```
 http://localhost:8080
 ```
 
-Refresh multiple times.
-
-You'll notice responses coming from
-
-- App-1
-- App-2
-- App-3
-
-showing Nginx Load Balancing.
+Refresh multiple times to observe load balancing.
 
 ---
 
-# 📈 Prometheus
-
-Open
+## Open Prometheus
 
 ```
 http://localhost:9090
@@ -274,203 +256,227 @@ http://localhost:9090
 
 ---
 
-# Check Targets
+# 📈 Prometheus Queries
 
-```
-Status
-   ↓
-Targets
-```
-
-Expected
-
-```
-app1   UP
-
-app2   UP
-
-app3   UP
-```
-
----
-
-# Useful Prometheus Queries
-
-## Check Health
+Check application status
 
 ```
 up
 ```
 
-Result
-
-```
-1 = Running
-
-0 = Down
-```
-
----
-
-## HTTP Requests
+Total requests
 
 ```
 http_requests_total
 ```
 
-Shows how many requests every backend has handled.
+Memory Usage
+
+```
+process_resident_memory_bytes
+```
+
+CPU Usage
+
+```
+process_cpu_seconds_total
+```
+
+Node Version
+
+```
+nodejs_version_info
+```
 
 ---
 
-# 📊 Example Monitoring Output
+# 📡 API
+
+## Home
 
 ```
-App-1 -> 16 Requests
+GET /
+```
 
-App-2 -> 7 Requests
+Response
 
-App-3 -> 16 Requests
+```json
+{
+    "app":"App-1",
+    "hostname":"container-id",
+    "time":"2026-08-02T12:30:22.000Z"
+}
 ```
 
 ---
 
-# Simulating Failure
+## Metrics
 
-Stop one backend
+```
+GET /metrics
+```
+
+Returns Prometheus metrics such as
+
+- CPU Usage
+- Memory Usage
+- Event Loop
+- HTTP Requests
+- Node.js Metrics
+
+---
+
+# 🐳 Useful Docker Commands
+
+Start containers
 
 ```bash
-docker stop app2
+docker compose up
 ```
 
-Run query
+Stop containers
 
-```
-up
-```
-
-Result
-
-```
-App-1 = 1
-
-App-2 = 0
-
-App-3 = 1
+```bash
+docker compose down
 ```
 
-Prometheus immediately detects that App-2 is down.
+Rebuild
 
----
-
-# Docker Containers
-
+```bash
+docker compose up --build
 ```
-app1
 
-app2
+View running containers
 
-app3
+```bash
+docker ps
+```
 
-nginx
+View logs
 
-prometheus
+```bash
+docker logs app1
+```
+
+Access container
+
+```bash
+docker exec -it app1 sh
 ```
 
 ---
 
-# Screenshots
+# 📸 Screenshots
 
-## Architecture
+## Application
 
-![Architecture](images/architecture.png)
+> Add browser screenshot here
+
+```
+screenshots/WhatsApp Image 2026-08-02 at 4.30.56 AM
+```
 
 ---
 
 ## Docker Containers
 
-![Docker](images/docker-containers.png)
+```
+screenshots/WhatsApp Image 2026-08-02 at 4.32.59 AM
+```
 
 ---
 
-## Load Balancing
+## Prometheus Dashboard
 
-### App-1
-
-![App1](images/app1.png)
-
----
-
-### App-2
-
-![App2](images/app2.png)
-
----
-
-### App-3
-
-![App3](images/app3.png)
+```
+screenshots/WhatsApp Image 2026-08-02 at 4.02.40 AM
+```
 
 ---
 
 ## Prometheus Targets
 
-![Targets](images/prometheus-targets.png)
+```
+screenshots/WhatsApp Image 2026-08-02 at 4.03.03 AM
+```
 
 ---
 
-## HTTP Request Metrics
+## Metrics
 
-![Metrics](images/prometheus-http.png)
-
----
-
-## Graph
-
-![Graph](images/prometheus-graph.png)
+```
+screenshots/WhatsApp Image 2026-08-02 at 4.03.03 AM
+```
 
 ---
 
-## Health Monitoring
+# 💡 Challenges Faced
 
-![Health](images/prometheus-up.png)
+During development, several issues were encountered and solved.
 
----
+- Docker Build Issues
+- npm install failures
+- Node Version Compatibility
+- Port Conflicts
+- Nginx Upstream Errors
+- Container Networking
+- Docker Compose Debugging
+- Prometheus Configuration Errors
+- YAML Indentation Problems
 
-# Future Improvements
-
-- Grafana Dashboard
-- Alertmanager
-- Kubernetes Deployment
-- HTTPS
-- SSL Certificate
-- CI/CD Pipeline using GitHub Actions
-- Docker Swarm
-- Kubernetes HPA
-- Loki Logging
-- Jaeger Tracing
+Each issue helped improve debugging and troubleshooting skills.
 
 ---
 
-# Learning Outcomes
+# 📚 Learning Outcomes
 
-Through this project I learned:
+After completing this project I learned:
 
-- Docker Images
-- Docker Containers
+- Docker Fundamentals
 - Docker Compose
-- Multi-container Applications
 - Reverse Proxy
 - Load Balancing
-- Monitoring
-- Metrics
-- Prometheus
 - Container Networking
-- Production Architecture Basics
+- Environment Variables
+- Monitoring
+- Prometheus Metrics
+- Docker Debugging
+- Production Folder Structure
 
 ---
 
-# Author
+# 🔮 Future Improvements
 
-**Mohd Farhan Khan**
+- Grafana Dashboard
+- Kubernetes Deployment
+- AlertManager
+- GitHub Actions CI/CD
+- Health Checks
+- SSL with Nginx
+- HTTPS Support
+- Auto Scaling
+- Redis Cache
+- Logging with Loki
 
-If you found this project useful, consider giving it a ⭐ on GitHub.
+---
+
+# 👨‍💻 Author
+
+**Farhan**
+
+If you found this project helpful, consider giving it a ⭐ on GitHub.
+
+---
+
+# ⭐ Support
+
+If you like this project:
+
+- ⭐ Star this repository
+- 🍴 Fork it
+- 🛠 Contribute
+- 📢 Share with others
+
+---
+
+## Thank You ❤️
