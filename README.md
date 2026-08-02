@@ -1,102 +1,179 @@
-# 🚀 Nginx Load Balancer with Docker & Prometheus Monitoring
+# 🚀 Dockerized Nginx Load Balancer with Prometheus Monitoring
 
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
-![Docker Compose](https://img.shields.io/badge/Docker_Compose-384D54?style=for-the-badge&logo=docker&logoColor=white)
-![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+A production-inspired project demonstrating how to build a scalable backend architecture using Docker, Docker Compose, Nginx Reverse Proxy, and Prometheus Monitoring.
+
+This project contains three Node.js backend servers running inside Docker containers behind an Nginx Load Balancer. Prometheus continuously monitors every backend by scraping application metrics.
 
 ---
 
-# 📌 Overview
+# 📌 Project Goal
 
-This project demonstrates how to deploy multiple Node.js applications behind an **Nginx Reverse Proxy** using **Docker Compose** and monitor them using **Prometheus**.
+The goal of this project is to understand how real-world backend systems are designed.
 
-Instead of exposing every application individually, Nginx acts as a single entry point and distributes incoming requests across multiple backend containers using the **Round Robin Load Balancing** algorithm.
+Instead of exposing a single backend server directly to users, requests first go through an Nginx Reverse Proxy which distributes traffic among multiple backend servers.
 
-Prometheus continuously collects metrics from each application and provides real-time monitoring.
-
----
-
-# 🎯 Problem Statement
-
-Imagine your application receives thousands of requests every second.
-
-Running only one application container creates problems:
-
-- Single point of failure
-- High CPU usage
-- Poor scalability
-- Downtime during maintenance
-
-This project solves these problems by introducing:
-
-- Reverse Proxy
-- Load Balancing
-- Multiple Containers
-- Monitoring
+Additionally, Prometheus continuously monitors the health and performance of every backend service.
 
 ---
 
-# 🏗 Architecture
+# 🏗 Project Architecture
 
 ```
-                    Client
-                       │
-                       ▼
-                 Nginx Reverse Proxy
-             ┌────────┼────────┐
-             ▼        ▼        ▼
-          App-1     App-2     App-3
-             ▲        ▲        ▲
-             └────────┼────────┘
-                      │
-                Prometheus
+                 Client
+                    │
+                    ▼
+         ┌────────────────────┐
+         │  NGINX Reverse Proxy│
+         │    Load Balancer    │
+         └────────────────────┘
+          │        │        │
+          ▼        ▼        ▼
+      App-1     App-2     App-3
+          │        │        │
+          └────────┼────────┘
+                   │
+                   ▼
+             Prometheus
+          (Metrics Collector)
+
 ```
 
 ---
 
-# ✨ Features
+# 📷 Architecture Diagram
 
-- Dockerized Node.js applications
-- Nginx Reverse Proxy
-- Round Robin Load Balancing
-- Docker Compose
-- Environment Variables
-- Prometheus Monitoring
-- Custom Metrics
-- Health Monitoring
-- Production Folder Structure
-- Easy Deployment
+> Add this image inside the `images/` folder.
+
+```
+images/architecture.png
+```
 
 ---
 
-# 🛠 Tech Stack
+# 📚 What is Reverse Proxy?
 
-| Technology | Purpose |
-|------------|----------|
-| Node.js | Backend |
-| Express | API |
-| Docker | Containerization |
-| Docker Compose | Multi-container Management |
-| Nginx | Reverse Proxy & Load Balancer |
-| Prometheus | Monitoring |
-| Linux | Development Environment |
+A Reverse Proxy is a server that sits between clients and backend servers.
+
+Instead of clients communicating directly with backend servers, every request first reaches Nginx.
+
+Nginx then forwards that request to one of the available backend servers.
+
+### Benefits
+
+- Hide backend servers
+- Increase security
+- Load balancing
+- Better scalability
+- SSL termination
+- Caching support
+
+---
+
+# 📚 What is Load Balancing?
+
+Load Balancing means distributing incoming requests across multiple backend servers.
+
+Instead of sending every request to a single server:
+
+```
+Client
+   │
+   ▼
+App-1 ❌ overloaded
+```
+
+Requests become:
+
+```
+Client
+   │
+   ▼
+Nginx
+
+ ├──► App-1
+ ├──► App-2
+ └──► App-3
+```
+
+This improves
+
+- Performance
+- Availability
+- Fault tolerance
+- Scalability
+
+---
+
+# 📚 What is Prometheus?
+
+Prometheus is an open-source monitoring tool.
+
+Instead of applications sending metrics to Prometheus,
+
+Prometheus **pulls** metrics from applications.
+
+This is called the **Pull Model**.
+
+Every few seconds Prometheus sends an HTTP request:
+
+```
+GET /metrics
+```
+
+The application responds with all current metrics.
+
+---
+
+# 📚 What are Metrics?
+
+Metrics are numerical values that describe the current state of an application.
+
+Examples:
+
+- CPU Usage
+- Memory Usage
+- Number of HTTP Requests
+- Application Uptime
+- Response Time
+- Error Count
+
+Example:
+
+```
+http_requests_total 52
+```
+
+Means:
+
+Application has served 52 requests.
+
+---
+
+# 📚 Why Monitoring?
+
+Without monitoring,
+
+we never know
+
+- whether a container is alive
+- how many requests it served
+- memory usage
+- CPU usage
+- application crashes
+
+Monitoring provides complete visibility into running services.
 
 ---
 
 # 📂 Project Structure
 
 ```
-nginx-load-balancer-monitoring/
-
+nginx-load-balancer/
 │
 ├── app/
+│   ├── server.js
 │   ├── Dockerfile
 │   ├── package.json
-│   ├── package-lock.json
-│   └── server.js
 │
 ├── nginx/
 │   └── nginx.conf
@@ -104,125 +181,62 @@ nginx-load-balancer-monitoring/
 ├── prometheus/
 │   └── prometheus.yml
 │
-├── screenshots/
-│   ├── architecture.png
-│   ├── browser.png
-│   ├── prometheus-home.png
-│   ├── prometheus-targets.png
-│   └── metrics.png
-│
 ├── docker-compose.yml
 │
-├── .gitignore
+├── images/
 │
 └── README.md
 ```
 
 ---
 
-# ⚙️ How It Works
+# ⚙ Tech Stack
 
-### Step 1
-
-The user opens
-
-```
-http://localhost:8080
-```
-
-↓
-
-### Step 2
-
-The request reaches Nginx.
-
-↓
-
-### Step 3
-
-Nginx forwards the request to one backend container.
-
-↓
-
-```
-App-1
-```
-
-↓
-
-Next request
-
-```
-App-2
-```
-
-↓
-
-Next request
-
-```
-App-3
-```
-
-↓
-
-Again
-
-```
-App-1
-```
-
-This is called **Round Robin Load Balancing**.
+- Node.js
+- Express.js
+- Docker
+- Docker Compose
+- Nginx
+- Prometheus
+- Prom Client
 
 ---
 
-# 📊 Monitoring Workflow
+# ⚙ Features
 
-Prometheus continuously sends requests to
+✅ Dockerized Backend
 
-```
-GET /metrics
-```
+✅ Nginx Reverse Proxy
 
-for every application.
+✅ Round Robin Load Balancing
 
-```
-Prometheus
+✅ Multiple Backend Containers
 
-↓
+✅ Prometheus Monitoring
 
-GET /metrics
+✅ HTTP Request Counter
 
-↓
+✅ Health Monitoring
 
-App-1
-
-↓
-
-Metrics
-
-↓
-
-Database
-```
-
-The same process is repeated for App-2 and App-3 every 15 seconds.
+✅ Metrics Endpoint
 
 ---
 
-# 🚀 Getting Started
+# 🚀 Running the Project
 
-## Clone Repository
+Clone repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/nginx-load-balancer-monitoring.git
-
-cd nginx-load-balancer-monitoring
+git clone <repository-url>
 ```
 
----
+Move into project
 
-## Build Containers
+```bash
+cd nginx-load-balancer
+```
+
+Run containers
 
 ```bash
 docker compose up --build
@@ -230,25 +244,29 @@ docker compose up --build
 
 ---
 
-## Verify Running Containers
+# 🌐 Application
 
-```bash
-docker ps
-```
-
----
-
-## Open Application
+Open
 
 ```
 http://localhost:8080
 ```
 
-Refresh multiple times to observe load balancing.
+Refresh multiple times.
+
+You'll notice responses coming from
+
+- App-1
+- App-2
+- App-3
+
+showing Nginx Load Balancing.
 
 ---
 
-## Open Prometheus
+# 📈 Prometheus
+
+Open
 
 ```
 http://localhost:9090
@@ -256,228 +274,203 @@ http://localhost:9090
 
 ---
 
-# 📈 Prometheus Queries
+# Check Targets
 
-Check application status
+```
+Status
+   ↓
+Targets
+```
+
+Expected
+
+```
+app1   UP
+
+app2   UP
+
+app3   UP
+```
+
+---
+
+# Useful Prometheus Queries
+
+## Check Health
 
 ```
 up
 ```
 
-Total requests
+Result
+
+```
+1 = Running
+
+0 = Down
+```
+
+---
+
+## HTTP Requests
 
 ```
 http_requests_total
 ```
 
-Memory Usage
+Shows how many requests every backend has handled.
+
+---
+
+# 📊 Example Monitoring Output
 
 ```
-process_resident_memory_bytes
-```
+App-1 -> 16 Requests
 
-CPU Usage
+App-2 -> 7 Requests
 
-```
-process_cpu_seconds_total
-```
-
-Node Version
-
-```
-nodejs_version_info
+App-3 -> 16 Requests
 ```
 
 ---
 
-# 📡 API
+# Simulating Failure
 
-## Home
+Stop one backend
+
+```bash
+docker stop app2
+```
+
+Run query
 
 ```
-GET /
+up
 ```
 
-Response
+Result
 
-```json
-{
-    "app":"App-1",
-    "hostname":"container-id",
-    "time":"2026-08-02T12:30:22.000Z"
-}
+```
+App-1 = 1
+
+App-2 = 0
+
+App-3 = 1
+```
+
+Prometheus immediately detects that App-2 is down.
+
+---
+
+# Docker Containers
+
+```
+app1
+
+app2
+
+app3
+
+nginx
+
+prometheus
 ```
 
 ---
 
-## Metrics
+# Screenshots
 
-```
-GET /metrics
-```
+## Architecture
 
-Returns Prometheus metrics such as
-
-- CPU Usage
-- Memory Usage
-- Event Loop
-- HTTP Requests
-- Node.js Metrics
-
----
-
-# 🐳 Useful Docker Commands
-
-Start containers
-
-```bash
-docker compose up
-```
-
-Stop containers
-
-```bash
-docker compose down
-```
-
-Rebuild
-
-```bash
-docker compose up --build
-```
-
-View running containers
-
-```bash
-docker ps
-```
-
-View logs
-
-```bash
-docker logs app1
-```
-
-Access container
-
-```bash
-docker exec -it app1 sh
-```
-
----
-
-# 📸 Screenshots
-
-## Application
-
-> Add browser screenshot here
-
-```
-screenshots/browser.png
-
-```
+![Architecture](images/architecture.png)
 
 ---
 
 ## Docker Containers
 
-```
-screenshots/docker-ps.png
-```
+![Docker](images/docker-containers.png)
 
 ---
 
-## Prometheus Dashboard
+## Load Balancing
 
-```
-screenshots/prometheus-home.png
-```
+### App-1
+
+![App1](images/app1.png)
+
+---
+
+### App-2
+
+![App2](images/app2.png)
+
+---
+
+### App-3
+
+![App3](images/app3.png)
 
 ---
 
 ## Prometheus Targets
 
-```
-screenshots/prometheus-targets.png
-```
+![Targets](images/prometheus-targets.png)
 
 ---
 
-## Metrics
+## HTTP Request Metrics
 
-```
-screenshots/metrics.png
-```
+![Metrics](images/prometheus-http.png)
 
 ---
 
-# 💡 Challenges Faced
+## Graph
 
-During development, several issues were encountered and solved.
-
-- Docker Build Issues
-- npm install failures
-- Node Version Compatibility
-- Port Conflicts
-- Nginx Upstream Errors
-- Container Networking
-- Docker Compose Debugging
-- Prometheus Configuration Errors
-- YAML Indentation Problems
-
-Each issue helped improve debugging and troubleshooting skills.
+![Graph](images/prometheus-graph.png)
 
 ---
 
-# 📚 Learning Outcomes
+## Health Monitoring
 
-After completing this project I learned:
-
-- Docker Fundamentals
-- Docker Compose
-- Reverse Proxy
-- Load Balancing
-- Container Networking
-- Environment Variables
-- Monitoring
-- Prometheus Metrics
-- Docker Debugging
-- Production Folder Structure
+![Health](images/prometheus-up.png)
 
 ---
 
-# 🔮 Future Improvements
+# Future Improvements
 
 - Grafana Dashboard
+- Alertmanager
 - Kubernetes Deployment
-- AlertManager
-- GitHub Actions CI/CD
-- Health Checks
-- SSL with Nginx
-- HTTPS Support
-- Auto Scaling
-- Redis Cache
-- Logging with Loki
+- HTTPS
+- SSL Certificate
+- CI/CD Pipeline using GitHub Actions
+- Docker Swarm
+- Kubernetes HPA
+- Loki Logging
+- Jaeger Tracing
 
 ---
 
-# 👨‍💻 Author
+# Learning Outcomes
+
+Through this project I learned:
+
+- Docker Images
+- Docker Containers
+- Docker Compose
+- Multi-container Applications
+- Reverse Proxy
+- Load Balancing
+- Monitoring
+- Metrics
+- Prometheus
+- Container Networking
+- Production Architecture Basics
+
+---
+
+# Author
 
 **Mohd Farhan Khan**
 
-If you found this project helpful, consider giving it a ⭐ on GitHub.
-
----
-
-# ⭐ Support
-
-If you like this project:
-
-- ⭐ Star this repository
-- 🍴 Fork it
-- 🛠 Contribute
-- 📢 Share with others
-
----
-
-## Thank You ❤️
+If you found this project useful, consider giving it a ⭐ on GitHub.
